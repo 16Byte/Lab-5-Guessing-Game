@@ -7,3 +7,6 @@ game
 
 # VSCode config
 .vscode/
+
+# OS Specific Files
+.DS_Store
