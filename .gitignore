@@ -1,0 +1,9 @@
+# Compiled binaries
+game
+*.exe
+
+# Object files
+*.o
+
+# VSCode config
+.vscode/
