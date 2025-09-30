@@ -9,5 +9,6 @@ class GuessingGame
         void Log(string message, bool newLine = true);
 
     private:
-        int GetRandomNumber(int min, int max);
+        int GetRandomNumber(int min, int max, unsigned int seed = 0);
+        void GiveTheUserAHint(int userGuess, int numberToGuess);
 };
