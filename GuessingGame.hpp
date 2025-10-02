@@ -7,10 +7,12 @@ class GuessingGame
     public:
         void StartGame();
         void Log(string message, bool newLine = true);
+        void LogSeparator();
 
     private:
         int GetRandomNumber(int min, int max, unsigned int seed = 0);
         void GiveTheUserAHint(int userGuess, int numberToGuess);
+        void CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries);
 
     //the following are UBUNTU/LINUX, and MacOS ONLY terminal color codes.
     #define RESET   "\033[0m"

@@ -1,35 +1,45 @@
 Lab 5 Planning
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 We'll be:
 - using the class #include <random>
 - implementing game logic with loops, conditions, and state tracking
 - using oop to ultimately have multiple source files and compile using a make file
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 Game Rules:
-- The program must generate a number between 1 and 100 randomly
-- We'll be using seeds so we can debug and test without having to actually guess
-- The player will have 10 tries to guess the random number
-- If the guess is wrong, give a hint such as higher or lower to the player
-- The win condition is when the player guesses the correct number
-- The win condition includes displaying a message to the player that they've won and then we'll ask the player if they'd like to play again or exit the program
-- The loss condition is when the player uses all 10 tries without guessing the correct number.
-- The loss condition includes what the win condition does, just with appropriate changes made
+- The program must generate a number between 1 and 100 randomly - done
+- We'll be using seeds so we can debug and test without having to actually guess - done
+- The player will have 10 tries to guess the random number - done
+- The win condition is when the player guesses the correct number - done
+- The win condition includes displaying a message to the player that they've won - done
+- The loss condition is when the player uses all 10 tries without guessing the correct number. - done
+- The loss condition includes what the win condition does, just with appropriate changes made - done
+
+- Regardless of win or loss, ask the player if they'd like to play again
+- If the guess is wrong, give a hint such as higher or lower to the player - done in a basic way - let's complicate it i guess?
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Gatchas:
-- The player must press 0 if they want a hint. 
-- The player will need to guess 2 times before receiving their first hint. 
-- The maximum amount of hints per game loop is 3
-- I guess they can stack their hints if they'd like so let's print their available hints if they have any
+- The player must press 0 if they want a hint. TODO
+- The player will need to guess 2 times before receiving their first hint. - done
+- The maximum amount of hints per game loop is 3 TODO
+- I guess they can stack their hints if they'd like so let's print their available hints if they have any TODO
 - We must have a few hint types and the type of hint must be random when a hint is used. Ex. (Is it even or odd, what's it a multiple of (prime numbers lol), etc.)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Input Validation:
 - Guesses outside the range of 1-100 or 0 are invalid and do not consume tries
 
 Requirements:
-- Must use OOP principles
-- 2 methods other than main
-- At least 1 class (has to be GuessingGame)
-- For every function you write, include comments describing:
+- Must use OOP principles - done
+- 2 methods other than main - done
+- At least 1 class (has to be GuessingGame) - done
+- For every function you write, include comments describing: BASICALLY DOCUMENT YOUR CODE
 
     Purpose: What does the function do?
 
@@ -48,11 +58,15 @@ Requirements:
         // Return: true if the game should continue, false if it ends.
         bool processGuess(int guess);
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 File Structure:
 - GuessingGame.hpp
 - GuessingGame.cpp
 - main.cpp
 - Makefile
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Example Makefile: You must add comments to your make file and own it
 all: game
@@ -60,6 +74,8 @@ game: main.cpp GuessingGame.cpp
 g++ main.cpp GuessingGame.cpp -o game
 clean:
 rm -f game
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Sample run:
 
@@ -84,6 +100,7 @@ Sample run:
     42
     Correct! You win!
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 What to Submit:
 
@@ -114,3 +131,5 @@ You must submit a zipped project folder on Canvas containing:
         Copy and paste one run of your game into a text file called output.txt.
 
         This helps show that your program works correctly.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------

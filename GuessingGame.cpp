@@ -9,6 +9,7 @@ void GuessingGame::StartGame()
     int numberToGuess = GetRandomNumber(1, 100);
     int userGuess = 0;
     int numberOfTries = 0;
+    const int MAX_TRIES = 10;
 
     cout << endl;
     Log("Welcome to the Guessing Game!");
@@ -16,17 +17,21 @@ void GuessingGame::StartGame()
     Log("Can you guess what it is?");
     cout << endl;
 
-    while(userGuess != numberToGuess && numberOfTries <= 10)
+    while(userGuess != numberToGuess && numberOfTries <= MAX_TRIES)
     {
+        CheckWinCondition(userGuess, numberToGuess, numberOfTries);
+
+        Log("You have " + to_string(MAX_TRIES - numberOfTries) + "\\" + to_string(MAX_TRIES) + " tries left.");
         Log("Enter your guess: ", false);
         cin >> userGuess;
         numberOfTries++;
-        
-        cout << endl;
-        Log("-------------------------------");
-        cout << endl;
 
-        if(userGuess == -1)
+        LogSeparator();
+
+        //debugging
+        Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")");
+
+        if(userGuess == -1) // Dev backend
         {
             // User wants to set a seed
             Log("Please enter the seed you'd like to use: ", false);
@@ -39,31 +44,13 @@ void GuessingGame::StartGame()
 
             Log("Seed set! Let's start over. ");
         }
-        else if(userGuess == numberToGuess)
-        {
-            // Win condition
-            Log("Congratulations! You've guessed the number " + to_string(numberToGuess) + " in " + to_string(numberOfTries) + " tries!");
-        }
-        else if(numberOfTries == 10)
-        {
-            // Lose condition
-            Log("Sorry, you've used all your tries. The number was " + to_string(numberToGuess) + ".");
-        }
-
-        // Give a hint every 2 tries
-        if(numberOfTries % 2 == 0 && userGuess != numberToGuess)
-        {
-            cout << BGCYAN << CYAN << "[HINT] " << RESET;
+        
+        if(numberOfTries % 2 == 0 && userGuess != numberToGuess) // Give a hint every 2 tries
             GiveTheUserAHint(userGuess, numberToGuess);
-        }
 
-        Log(numberOfTries < 10 ? "You have " + to_string(10 - numberOfTries) + " tries left." : "No tries left. Game over.");
-
-        //debugging
-        Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")", false);
-        Log(to_string(numberOfTries));
-        cout << endl;
+        
     }
+    //end of program
 }
 
 void GuessingGame::Log(string message, bool newLine)
@@ -72,19 +59,45 @@ void GuessingGame::Log(string message, bool newLine)
     if(newLine) cout << endl;
 }
 
-void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
+void GuessingGame::LogSeparator()
 {
-    // TODO:
-    // here we're going to choose a random number
-    // in a switch statement we'll use that number to generate a hint for the player
-    
-    if(numberToGuess == (sqrt(userGuess)))
+    cout << endl;
+    Log("-------------------------------");
+    cout << endl;
+}
+
+void GuessingGame::CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries)
+{
+    if(numberOfTries <= 0) return;
+
+    if(userGuess == numberToGuess)
     {
-        Log("The number you're looking for is the square root of your last guess.");
+        // Win condition
+        Log("Congratulations! You've guessed the number " + to_string(numberToGuess) + " in " + to_string(numberOfTries) + " tries!");
+        return;
+    }
+    else if(numberOfTries > 10 && userGuess != numberToGuess)
+    {
+        // Lose condition
+        Log("Sorry, you've used all your tries. The number was " + to_string(numberToGuess) + ".");
+
+        Log("Would you like to play again? y/N");
+
+        string playAgainChoice = "";
+        cin >> playAgainChoice;
+
+        if(playAgainChoice.empty() || (playAgainChoice == "n" || playAgainChoice == "N"))
+        {
+            Log("Thanks for playing!");
+            return;
+        }
+        else if(playAgainChoice == "y" || playAgainChoice == "Y")
+        {
+            StartGame();
+        }
     }
 
-    //temp
-    else if(userGuess < numberToGuess)
+    if(userGuess < numberToGuess)
     {
         Log("Too low! Try again.");
     }
@@ -92,6 +105,19 @@ void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
     {
         Log("Too high! Try again.");
     }
+}
+
+void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
+{
+    // TODO:
+    // KISS.
+
+    cout << BGCYAN << "[HINT] ";
+    
+    if(numberToGuess == (sqrt(userGuess)))
+        Log("The number you're looking for is the square root of your last guess.");
+
+    cout << RESET;
 }
 
 int GuessingGame::GetRandomNumber(int min, int max, unsigned int seed)
