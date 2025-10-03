@@ -19,12 +19,12 @@ void GuessingGame::StartGame()
 
     while(userGuess != numberToGuess && numberOfTries <= MAX_TRIES)
     {
-        CheckWinCondition(userGuess, numberToGuess, numberOfTries);
-
         Log("You have " + to_string(MAX_TRIES - numberOfTries) + "\\" + to_string(MAX_TRIES) + " tries left.");
         Log("Enter your guess: ", false);
         cin >> userGuess;
         numberOfTries++;
+
+        CheckWinCondition(userGuess, numberToGuess, numberOfTries);
 
         LogSeparator();
 
