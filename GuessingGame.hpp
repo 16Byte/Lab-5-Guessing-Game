@@ -4,16 +4,6 @@ using namespace std;
 
 class GuessingGame
 {
-    public:
-        void StartGame();
-        void Log(string message, bool newLine = true);
-        void LogSeparator();
-
-    private:
-        int GetRandomNumber(int min, int max, unsigned int seed = 0);
-        void GiveTheUserAHint(int userGuess, int numberToGuess);
-        void CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries);
-
     //the following are UBUNTU/LINUX, and MacOS ONLY terminal color codes.
     #define RESET   "\033[0m"
     #define BLACK   "\033[30m"      /* Black */
@@ -43,4 +33,24 @@ class GuessingGame
     #define BGCYAN    "\033[46m"      /* Cyan background */
     #define BGWHITE   "\033[47m"      /* White background */
 
+    public:
+        void StartGame();
+        void Log(string message, bool newLine = true, const char* color = RESET);
+        void LogSeparator();
+
+    private:
+        int GetRandomNumber(int min, int max, unsigned int seed = 0);
+        void GiveTheUserAHint(int userGuess, int numberToGuess);
+        void CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries);
+        void AskTheUserIfTheyWantToPlayAgain();
+
+        int numberToGuess = 0;
+        int userGuess = 0;
+        int userGuessCached = 0;
+        int numberOfTries = 0;
+        int numberOfHintsGiven = 0;
+        int numberOfHintsUsed = 0;
+        
+        const int MAX_TRIES = 10;
+        const int MAX_HINTS = 3;
 };

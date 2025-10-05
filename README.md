@@ -17,9 +17,8 @@ Game Rules:
 - The win condition includes displaying a message to the player that they've won - done
 - The loss condition is when the player uses all 10 tries without guessing the correct number. - done
 - The loss condition includes what the win condition does, just with appropriate changes made - done
-
-- Regardless of win or loss, ask the player if they'd like to play again
-- If the guess is wrong, give a hint such as higher or lower to the player - done in a basic way - let's complicate it i guess?
+- Regardless of win or loss, ask the player if they'd like to play again - done
+- If the guess is wrong, give a hint such as higher or lower to the player - done
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
