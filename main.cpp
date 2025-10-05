@@ -9,5 +9,8 @@ int main()
 
     game.StartGame();
 
+    // TODO: Maybe move StartGame to this file to show more OOP concepts than just game.StartGame() lol?
+    // End of program
+
     return 0;
 }
