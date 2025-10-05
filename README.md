@@ -23,16 +23,16 @@ Game Rules:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Gatchas:
-- The player must press 0 if they want a hint. TODO
+- The player must press 0 if they want a hint. - done
 - The player will need to guess 2 times before receiving their first hint. - done
-- The maximum amount of hints per game loop is 3 TODO
-- I guess they can stack their hints if they'd like so let's print their available hints if they have any TODO
-- We must have a few hint types and the type of hint must be random when a hint is used. Ex. (Is it even or odd, what's it a multiple of (prime numbers lol), etc.)
+- The maximum amount of hints per game loop is 3 - done
+- I guess they can stack their hints if they'd like so let's print their available hints if they have any - done
+- We must have a few hint types and the type of hint must be random when a hint is used. Ex. (Is it even or odd, what's it a multiple of (prime numbers lol), etc.) *TODO*
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Input Validation:
-- Guesses outside the range of 1-100 or 0 are invalid and do not consume tries
+- Guesses outside the range of 1-100 or 0 are invalid and do not consume tries *TODO*
 
 Requirements:
 - Must use OOP principles - done
