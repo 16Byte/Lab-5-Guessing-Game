@@ -1,8 +1,37 @@
 #include <iostream>
 #include <random>
+#include <sstream>
+#include <ctime>
 #include "GuessingGame.hpp"
 
 using namespace std;
+
+int GuessingGame::GetUserInput()
+{
+    int input;
+    string line;
+    
+    while (true) {
+        // Get the entire line of input
+        if (!getline(cin, line) || line.empty()) {
+            cerr << "Error: No input provided. Please enter a number: ";
+            continue;
+        }
+        
+        // Try to convert the string to a number
+        istringstream iss(line);
+        if (iss >> input && iss.eof()) {
+            // Check if input is valid (0 for hint or 1-100 for guess)
+            if (input == 0 || (input >= 1 && input <= 100)) {
+                return input;
+            }
+            cerr << "Error: Please enter a number between 1 and 100 (or 0 for a hint): ";
+            continue;
+        }
+        
+        cerr << "Error: That was not a number. Please enter a number: ";
+    }
+}
 
 void GuessingGame::StartGame()
 {
@@ -11,37 +40,52 @@ void GuessingGame::StartGame()
     numberOfTries = 0;
     numberOfHintsGiven = 0;
     numberOfHintsUsed = 0;
+    int actualGuessCount = 0;  // Track actual guesses separately from tries
 
     //debugging
     Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")", true, BGGREEN);
 
-    cout << endl;
+    std::cout << endl;
     Log("Welcome to the Guessing Game!");
     Log("I'm thinking of a number between 1 and 100.");
     Log("Can you guess what it is?");
-    cout << endl;
+    std::cout << endl;
+    Log("You have " + to_string(MAX_TRIES) + " tries to guess the number.");
+    Log("You can enter 0 to use a hint if you have any available.");
+    Log("Good luck!");
+    std::cout << endl;
 
     while(userGuess != numberToGuess && numberOfTries <= MAX_TRIES)
     {
         Log("Enter your guess: ", false);
+        userGuess = GetUserInput();
 
-        cin >> userGuess;
-
-        if(numberOfHintsGiven - numberOfHintsUsed > 0 && userGuess == 0) // User asked for a hint
+        if(userGuess == 0) // User wants to use a hint
         {
-            GiveTheUserAHint(userGuess, numberToGuess);
+            if(numberOfHintsGiven - numberOfHintsUsed > 0) {
+                numberOfHintsUsed++;
+                GiveTheUserAHint(userGuess, numberToGuess);
+            } else {
+                Log("No hints available! You need to make more guesses first.", true, BGRED);
+            }
         }
         else
+        {
             numberOfTries++;
+            actualGuessCount++;  // Increment actual guess count
+            
+            // Give a hint every 2 actual guesses (ignoring hint requests)
+            if(actualGuessCount % 2 == 0 && userGuess != numberToGuess && numberOfHintsGiven < MAX_HINTS && numberOfTries <= MAX_TRIES) {
+                if(numberOfHintsGiven - numberOfHintsUsed < MAX_HINTS) {
+                    numberOfHintsGiven++;
+                }
+            }
+
+            CheckWinCondition(userGuess, numberToGuess, numberOfTries);
+        }
 
         LogSeparator();
-        Log("You have " + to_string(MAX_TRIES - (numberOfTries - 1)) + "\\" + to_string(MAX_TRIES) + " tries left.", true, BGMAGENTA);
-        
-
-        if(numberOfTries % 2 == 0 && userGuessCached != 0 && userGuess != numberToGuess && numberOfHintsGiven < MAX_HINTS && numberOfTries <= MAX_TRIES)
-            numberOfHintsGiven++; // Give a hint every 2 tries, if there are hints left to give
-
-        CheckWinCondition(userGuess, numberToGuess, numberOfTries);
+        Log("You have " + to_string(MAX_TRIES - numberOfTries) + "\\" + to_string(MAX_TRIES) + " tries left.", true, BGMAGENTA);
 
         if(userGuess == -1) // Dev backend
         {
@@ -58,7 +102,8 @@ void GuessingGame::StartGame()
         }
         userGuessCached = userGuess;
         
-        Log("You have " + to_string(numberOfHintsGiven - numberOfHintsUsed) + "\\" + to_string(MAX_HINTS) + " hints available.", true, BGCYAN);
+        int availableHints = std::max(0, numberOfHintsGiven - numberOfHintsUsed);
+        Log("You have " + to_string(availableHints) + "\\" + to_string(MAX_HINTS) + " hints available.", true, BGCYAN);
     }
     //end of program
 }
@@ -95,23 +140,23 @@ void GuessingGame::CheckWinCondition(int userGuess, int numberToGuess, int numbe
 
 void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
 {
-    // TODO:
-    // KISS.
-
-    if(numberOfHintsUsed >= MAX_HINTS) return;
+    if(numberOfHintsUsed >= MAX_HINTS) 
+        return;
 
     Log("[HINT] ", false, BGCYAN);
 
-    if(numberOfHintsUsed == 1) // First hint: is it odd or even?
-    {
+    // Get a random hint type
+    mt19937 gen(static_cast<unsigned int>(time(0) + numberOfHintsUsed));
+    uniform_int_distribution<> dist(0, 2);
+    int hintType = dist(gen);
+
+    if(hintType == 0) {
         if(numberToGuess % 2 == 0)
             Log("The number you're looking for is even.", true, BGCYAN);
         else
             Log("The number you're looking for is odd.", true, BGCYAN);
     }
-    
-    else if(numberOfHintsUsed == 2) // Second hint: is it divisible by 3, 5, or 7?
-    {
+    else if(hintType == 1) {
         if(numberToGuess % 3 == 0)
             Log("The number you're looking for is divisible by 3.", true, BGCYAN);
         else if(numberToGuess % 5 == 0)
@@ -121,23 +166,18 @@ void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
         else
             Log("The number you're looking for is not divisible by 3, 5, or 7.", true, BGCYAN);
     }
-    else if(numberOfHintsUsed == 3) // Third hint: is it a square of a number?
-    {
-        for(int i = 1; i <= 10; i++)
-        {
-            if(i * i == numberToGuess)
-            {
-                Log("The number you're looking for is a perfect square: " + to_string(i) + " * " + to_string(i) + " = " + to_string(numberToGuess), true, BGCYAN);
-                numberOfHintsUsed++;
-                return;
+    else {
+        bool isPrime = true;
+        for(int i = 2; i <= numberToGuess / 2; i++) {
+            if(numberToGuess % i == 0) {
+                isPrime = false;
+                break;
             }
         }
-        Log("The number you're looking for is not a perfect square.", true, BGCYAN);
+        Log(isPrime ? 
+            "The number you're looking for is a prime number." : 
+            "The number you're looking for is not a prime number.", true, BGCYAN);
     }
-
-    cout << RESET;
-
-    numberOfHintsUsed++;
 }
 
 void GuessingGame::AskTheUserIfTheyWantToPlayAgain()
@@ -185,13 +225,13 @@ int GuessingGame::GetRandomNumber(int min, int max, unsigned int seed)
 
 void GuessingGame::Log(string message, bool newLine, const char* color)
 {
-    cout << color << message << RESET;
-    if(newLine) cout << endl;
+    std::cout << color << message << RESET;
+    if(newLine) std::cout << endl;
 }
 
 void GuessingGame::LogSeparator()
 {
-    cout << endl;
+    std::cout << endl;
     Log("-------------------------------");
-    cout << endl;
+    std::cout << endl;
 }

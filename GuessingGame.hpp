@@ -39,18 +39,19 @@ class GuessingGame
         void LogSeparator();
 
     private:
+        int GetUserInput();
         int GetRandomNumber(int min, int max, unsigned int seed = 0);
         void GiveTheUserAHint(int userGuess, int numberToGuess);
         void CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries);
         void AskTheUserIfTheyWantToPlayAgain();
 
-        int numberToGuess = 0;
-        int userGuess = 0;
-        int userGuessCached = 0;
-        int numberOfTries = 0;
-        int numberOfHintsGiven = 0;
-        int numberOfHintsUsed = 0;
+        int numberToGuess;
+        int userGuess;
+        int userGuessCached;
+        int numberOfTries;
+        int numberOfHintsGiven;
+        int numberOfHintsUsed;
         
-        const int MAX_TRIES = 10;
-        const int MAX_HINTS = 3;
+        const static int MAX_TRIES = 10;
+        const static int MAX_HINTS = 3;
 };

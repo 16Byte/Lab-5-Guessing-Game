@@ -9,7 +9,7 @@ We'll be:
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Game Rules:
+Game Rules: - done
 - The program must generate a number between 1 and 100 randomly - done
 - We'll be using seeds so we can debug and test without having to actually guess - done
 - The player will have 10 tries to guess the random number - done
