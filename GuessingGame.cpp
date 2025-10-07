@@ -6,33 +6,6 @@
 
 using namespace std;
 
-int GuessingGame::GetUserInput()
-{
-    int input;
-    string line;
-    
-    while (true) {
-        // Get the entire line of input
-        if (!getline(cin, line) || line.empty()) {
-            cerr << "Error: No input provided. Please enter a number: ";
-            continue;
-        }
-        
-        // Try to convert the string to a number
-        istringstream iss(line);
-        if (iss >> input && iss.eof()) {
-            // Check if input is valid (0 for hint or 1-100 for guess)
-            if (input == 0 || (input >= 1 && input <= 100)) {
-                return input;
-            }
-            cerr << "Error: Please enter a number between 1 and 100 (or 0 for a hint): ";
-            continue;
-        }
-        
-        cerr << "Error: That was not a number. Please enter a number: ";
-    }
-}
-
 void GuessingGame::StartGame()
 {
     numberToGuess = GetRandomNumber(1, 100);
@@ -40,20 +13,18 @@ void GuessingGame::StartGame()
     numberOfTries = 0;
     numberOfHintsGiven = 0;
     numberOfHintsUsed = 0;
+    bool debugging = false;
 
     //debugging
-    Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")", true, BGGREEN);
+    if(debugging)
+    {
+        Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")", true, BGGREEN);
+        LogSeparator();
+    }
+}
 
-    std::cout << endl;
-    Log("Welcome to the Guessing Game!");
-    Log("I'm thinking of a number between 1 and 100.");
-    Log("Can you guess what it is?");
-    std::cout << endl;
-    Log("You have " + to_string(MAX_TRIES) + " tries to guess the number.");
-    Log("You can enter 0 to use a hint if you have any available.");
-    Log("Good luck!");
-    std::cout << endl;
-
+void GuessingGame::HandleGameLoop()
+{
     while(userGuess != numberToGuess && numberOfTries <= MAX_TRIES)
     {
         Log("Enter your guess: ", false);
@@ -61,31 +32,12 @@ void GuessingGame::StartGame()
 
         if(userGuess == 0) // User wants to use a hint
         {
-            if(numberOfHintsGiven - numberOfHintsUsed > 0) {
-                numberOfHintsUsed++;
+            if(numberOfHintsGiven - numberOfHintsUsed > 0)
                 GiveTheUserAHint(userGuess, numberToGuess);
-            } else {
-                Log("No hints available! You need to make more guesses first.", true, BGRED);
-            }
+            else
+                Log("No hints available!", true, BGRED);
         }
-        else
-        {
-            numberOfTries++;
-            
-            // Award a new hint every 2 guesses
-            if(numberOfTries % 2 == 0 && userGuess != numberToGuess) {
-                if (numberOfHintsGiven < MAX_HINTS) {
-                    numberOfHintsGiven++;
-                }
-            }
-
-            CheckWinCondition(userGuess, numberToGuess, numberOfTries);
-        }
-
-        LogSeparator();
-        Log("You have " + to_string(MAX_TRIES - numberOfTries) + "\\" + to_string(MAX_TRIES) + " tries left.", true, BGMAGENTA);
-
-        if(userGuess == -1) // Dev backend
+        else if(userGuess == -1) // Dev backend
         {
             // User wants to set a seed
             Log("Please enter the seed you'd like to use: ", false);
@@ -98,44 +50,56 @@ void GuessingGame::StartGame()
 
             Log("Seed set! Let's start over.", true, BGGREEN);
         }
+        else
+        {
+            numberOfTries++;
+
+            // Give the player a new hint every 2 guesses, so long as they haven't surpassed MAX_HINTS
+            if((numberOfTries % 2 == 0 && userGuess != numberToGuess) && numberOfHintsGiven < MAX_HINTS)
+                numberOfHintsGiven++;
+
+            if(CheckWinLossCondition(userGuess, numberToGuess, numberOfTries))
+                return;
+        }
         userGuessCached = userGuess;
+
+        LogSeparator();
+        Log("You have " + to_string(MAX_TRIES - numberOfTries) + "\\" + to_string(MAX_TRIES) + " tries left.", true, BGMAGENTA);
         
         int availableHints = numberOfHintsGiven - numberOfHintsUsed;
         if (availableHints < 0) availableHints = 0;
         if (availableHints > MAX_HINTS) availableHints = MAX_HINTS;
         Log("You have " + to_string(availableHints) + "\\" + to_string(MAX_HINTS) + " hints available.", true, BGCYAN);
     }
-    //end of program
 }
 
-void GuessingGame::CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries)
+bool GuessingGame::CheckWinLossCondition(int userGuess, int numberToGuess, int numberOfTries)
 {
-    if(numberOfTries <= 0) return;
+    if(numberOfTries <= 0) return false; //don't print anything if no tries have been made yet
 
     if(userGuess == numberToGuess)
     {
         // Win condition
         Log("Congratulations! You've guessed the number " + to_string(numberToGuess) + " in " + to_string(numberOfTries) + " tries!", true, BGGREEN);
         AskTheUserIfTheyWantToPlayAgain();
-        return;
+        return true;
     }
-    else if(numberOfTries > 10 && userGuess != numberToGuess)
+    else if(numberOfTries > MAX_TRIES && userGuess != numberToGuess)
     {
-        // Lose condition
+        // Loss condition
         Log("Sorry, you've used all your tries. The number was " + to_string(numberToGuess) + ".", true, BGRED);
 
         AskTheUserIfTheyWantToPlayAgain();
-        return;   
+        return true;   
     }
 
+    // Provide feedback so they're not guessing blindly
     if(userGuess < numberToGuess)
-    {
         Log("Too low! Try again.", true, BGCYAN);
-    }
     else if(userGuess > numberToGuess)
-    {
         Log("Too high! Try again.", true, BGCYAN);
-    }
+
+    return false;
 }
 
 void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
@@ -180,29 +144,58 @@ void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
             "The number you're looking for is a prime number." : 
             "The number you're looking for is not a prime number.", true, BGCYAN);
     }
+    numberOfHintsUsed++;
 }
 
 void GuessingGame::AskTheUserIfTheyWantToPlayAgain()
 {
-    Log("Would you like to play again? Y/N");
+    Log("Would you like to play again? y/N");
 
-        string playAgainChoice = "";
-        cin >> playAgainChoice;
+    string playAgainChoice = "";
 
-        if(playAgainChoice.empty() || (playAgainChoice == "n" || playAgainChoice == "N"))
-        {
-            Log("Thanks for playing!");
-            return;
+    if(!getline(cin, playAgainChoice) || playAgainChoice.empty() || (playAgainChoice == "n" || playAgainChoice == "N"))
+    {
+        Log("Thanks for playing!");
+        return;
+    }
+    else if(playAgainChoice == "y" || playAgainChoice == "Y")
+    {
+        StartGame();
+        HandleGameLoop();
+        return;
+    }
+    else
+    {
+        Log("Invalid input. Please enter Y or N.");
+        AskTheUserIfTheyWantToPlayAgain();
+    }
+}
+
+int GuessingGame::GetUserInput()
+{
+    int input;
+    string line;
+    
+    while (true) {
+        // Check if input has a value
+        if (!getline(cin, line) || line.empty()) {
+            cerr << "Error: No input provided. Please enter a number: ";
+            continue;
         }
-        else if(playAgainChoice == "y" || playAgainChoice == "Y")
-        {
-            StartGame();
+        
+        // Try to convert the string to a number
+        istringstream iss(line);
+        if (iss >> input && iss.eof()) {
+            // Check if input is valid (0 for hint or 1-100 for guess)
+            if (input == 0 || (input >= 1 && input <= 100)) {
+                return input;
+            }
+            cerr << "Error: Please enter a number between 1 and 100 (or 0 for a hint): ";
+            continue;
         }
-        else
-        {
-            Log("Invalid input. Please enter Y or N.");
-            AskTheUserIfTheyWantToPlayAgain();
-        }
+        
+        cerr << "Error: That was not a number. Please enter a number: ";
+    }
 }
 
 int GuessingGame::GetRandomNumber(int min, int max, unsigned int seed)

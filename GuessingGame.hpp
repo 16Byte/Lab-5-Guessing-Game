@@ -35,14 +35,17 @@ class GuessingGame
 
     public:
         void StartGame();
+        void HandleGameLoop();
         void Log(string message, bool newLine = true, const char* color = RESET);
         void LogSeparator();
+
+        const static int MAX_TRIES = 10;
 
     private:
         int GetUserInput();
         int GetRandomNumber(int min, int max, unsigned int seed = 0);
         void GiveTheUserAHint(int userGuess, int numberToGuess);
-        void CheckWinCondition(int userGuess, int numberToGuess, int numberOfTries);
+        bool CheckWinLossCondition(int userGuess, int numberToGuess, int numberOfTries);
         void AskTheUserIfTheyWantToPlayAgain();
 
         int numberToGuess;
@@ -52,6 +55,5 @@ class GuessingGame
         int numberOfHintsGiven;
         int numberOfHintsUsed;
         
-        const static int MAX_TRIES = 10;
         const static int MAX_HINTS = 3;
 };
