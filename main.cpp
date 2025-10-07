@@ -21,6 +21,10 @@ int main()
     return 0;
 }
 
+// Purpose: Introduces the game to the user and explains the rules.
+// Precondition: The game object is initialized.
+// Postcondition: The user is informed about the game rules and how to play.
+// Returns: void
 void IntroduceTheGame(GuessingGame& game)
 {
     std::cout << endl;

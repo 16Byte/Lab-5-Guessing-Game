@@ -6,6 +6,10 @@
 
 using namespace std;
 
+// Purpose: Starts the game by initializing the number to guess and resetting other game variables.
+// Precondition: The game is not currently running.
+// Postcondition: The game state is initialized, and the number to guess is set.
+// Returns: void
 void GuessingGame::StartGame()
 {
     numberToGuess = GetRandomNumber(1, 100);
@@ -23,6 +27,11 @@ void GuessingGame::StartGame()
     }
 }
 
+// Purpose: Handles The main game loop where the user guesses the number.
+// Precondition : The game has been started and the number to guess is set.
+// Postcondition: The user has either guessed the number, used all tries, or opted to
+//                play again. The game state is reset if the user chooses to play again.
+// Returns: void
 void GuessingGame::HandleGameLoop()
 {
     while(userGuess != numberToGuess && numberOfTries <= MAX_TRIES)
@@ -73,6 +82,10 @@ void GuessingGame::HandleGameLoop()
     }
 }
 
+// Purpose: Checks if the user has won or lost the game based on their guess and the number of tries.
+// Precondition: The user has made a guess and the number of tries is known.
+// Postcondition: If the user has won or lost, a message is displayed and the user is prompted to play again.
+// Returns: true if the game is over (win/loss), false otherwise.
 bool GuessingGame::CheckWinLossCondition(int userGuess, int numberToGuess, int numberOfTries)
 {
     if(numberOfTries <= 0) return false; //don't print anything if no tries have been made yet
@@ -102,6 +115,10 @@ bool GuessingGame::CheckWinLossCondition(int userGuess, int numberToGuess, int n
     return false;
 }
 
+// Purpose: Gives the user a hint based on their guess and the number to guess.
+// Precondition: The user has requested a hint and there are hints available.
+// Postcondition: A hint is provided to the user based on the number to guess.
+// Returns: void
 void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
 {
     if(numberOfHintsGiven == 0) {
@@ -147,6 +164,10 @@ void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
     numberOfHintsUsed++;
 }
 
+// Purpose: Asks the user if they want to play again after a game ends.
+// Precondition: The game has ended (win/loss).
+// Postcondition: If the user chooses to play again, the game state is reset and a new game starts.
+// Returns: void
 void GuessingGame::AskTheUserIfTheyWantToPlayAgain()
 {
     Log("Would you like to play again? y/N");
@@ -171,6 +192,10 @@ void GuessingGame::AskTheUserIfTheyWantToPlayAgain()
     }
 }
 
+// Purpose: Gets user input and validates it.
+// Precondition: The user is prompted to enter a guess or a hint request.
+// Postcondition: The user input is validated and returned as an integer.
+// Returns: The validated user input as an integer (0 for hint, 1-100 for guess).
 int GuessingGame::GetUserInput()
 {
     int input;
@@ -198,6 +223,11 @@ int GuessingGame::GetUserInput()
     }
 }
 
+// Purpose: Generates a random number between min and max, optionally using a seed.
+// Precondition: The min and max values are valid, and an optional seed can be provided.
+// Postcondition: A random number is generated based on the provided parameters.
+// Returns: A random number between min and max, or -404 if an error occurs.
+// Note: If seed is 0, a random seed is used; otherwise, the provided seed is used.
 int GuessingGame::GetRandomNumber(int min, int max, unsigned int seed)
 {
     random_device rand;
@@ -218,12 +248,20 @@ int GuessingGame::GetRandomNumber(int min, int max, unsigned int seed)
     return -404; // Error -- seed not found
 }
 
+// Purpose: Logs a message to the console with optional color and newline.
+ // Precondition: The message to log is provided, and optional parameters for new line and color can be set.
+ // Postcondition: The message is printed to the console with the specified formatting.
+ // Returns: void
 void GuessingGame::Log(string message, bool newLine, const char* color)
 {
     std::cout << color << message << RESET;
     if(newLine) std::cout << endl;
 }
 
+// Purpose: Logs a separator line to the console for better readability.
+ // Precondition: None
+ // Postcondition: A separator line is printed to the console.
+ // Returns: void
 void GuessingGame::LogSeparator()
 {
     std::cout << endl;
