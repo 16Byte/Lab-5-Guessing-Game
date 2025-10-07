@@ -40,7 +40,6 @@ void GuessingGame::StartGame()
     numberOfTries = 0;
     numberOfHintsGiven = 0;
     numberOfHintsUsed = 0;
-    int actualGuessCount = 0;  // Track actual guesses separately from tries
 
     //debugging
     Log(" (Debug: Number to guess is " + to_string(numberToGuess) + ")", true, BGGREEN);
@@ -72,11 +71,10 @@ void GuessingGame::StartGame()
         else
         {
             numberOfTries++;
-            actualGuessCount++;  // Increment actual guess count
             
-            // Give a hint every 2 actual guesses (ignoring hint requests)
-            if(actualGuessCount % 2 == 0 && userGuess != numberToGuess && numberOfHintsGiven < MAX_HINTS && numberOfTries <= MAX_TRIES) {
-                if(numberOfHintsGiven - numberOfHintsUsed < MAX_HINTS) {
+            // Award a new hint every 2 guesses
+            if(numberOfTries % 2 == 0 && userGuess != numberToGuess) {
+                if (numberOfHintsGiven < MAX_HINTS) {
                     numberOfHintsGiven++;
                 }
             }
@@ -102,7 +100,9 @@ void GuessingGame::StartGame()
         }
         userGuessCached = userGuess;
         
-        int availableHints = std::max(0, numberOfHintsGiven - numberOfHintsUsed);
+        int availableHints = numberOfHintsGiven - numberOfHintsUsed;
+        if (availableHints < 0) availableHints = 0;
+        if (availableHints > MAX_HINTS) availableHints = MAX_HINTS;
         Log("You have " + to_string(availableHints) + "\\" + to_string(MAX_HINTS) + " hints available.", true, BGCYAN);
     }
     //end of program
@@ -140,8 +140,10 @@ void GuessingGame::CheckWinCondition(int userGuess, int numberToGuess, int numbe
 
 void GuessingGame::GiveTheUserAHint(int userGuess, int numberToGuess)
 {
-    if(numberOfHintsUsed >= MAX_HINTS) 
+    if(numberOfHintsGiven == 0) {
+        Log("No hints available!", true, BGRED);
         return;
+    }
 
     Log("[HINT] ", false, BGCYAN);
 
