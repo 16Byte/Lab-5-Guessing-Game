@@ -10,3 +10,9 @@ game
 
 # OS Specific Files
 .DS_Store
+
+# Images
+*.png
+
+# Zip files
+*.zip
